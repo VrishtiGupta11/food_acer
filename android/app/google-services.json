@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "764934300738",
+    "project_id": "food-acer",
+    "storage_bucket": "food-acer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764934300738:android:96870debfabc7029b739db",
+        "android_client_info": {
+          "package_name": "tech.acer.com.food_acer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "764934300738-h52gdd2p4p7phm7nvqubjd1juh1mu0jq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmV27PGJSK5Qmm571DbgnbQcXjiKILhEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "764934300738-h52gdd2p4p7phm7nvqubjd1juh1mu0jq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
