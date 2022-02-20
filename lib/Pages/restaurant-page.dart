@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:food_acer/Pages/dish-page.dart';
 import 'package:food_acer/Util/constants.dart';
+
+import 'add-dishes.dart';
 
 class RestaurantPage extends StatefulWidget {
   const RestaurantPage({Key? key}) : super(key: key);
@@ -20,9 +22,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(Util.appUser == null){
-      Util.fetchUserDetails();
-    }
+    // if(Util.appUser == null){
+    //   Util.fetchUserDetails();
+    // }
+
     return StreamBuilder(
       stream: fetchRestaurants(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -61,10 +64,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                 DrawerHeader(
                   padding: EdgeInsets.all(0),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurpleAccent,
+                    color: Colors.deepPurple.shade300,
                   ),
                     child: Card(
-                      color: Colors.deepPurpleAccent,
+                      color: Colors.deepPurple.shade300,
                       child: Row(
                         children: [
                           // Align(
@@ -72,14 +75,33 @@ class _RestaurantPageState extends State<RestaurantPage> {
                           //   alignment: Alignment.bottomLeft,
                           // ),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(100),
                             child: Container(
-                              color: Colors.grey,
-                              child: Icon(
-                                Icons.person,
-                                size: 90,
-                                color: Colors.white,
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 5,
+                                    ),
+                                  ]
                               ),
+                              // child: Image.network(map['imageURL'], fit: BoxFit.fill,),
+                              child: Util.appUser == null || Util.appUser!.imageURL == ''
+                              ? Container(
+                                      color: Colors.grey,
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 80,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Image.network(
+                                      Util.appUser!.imageURL.toString(),
+                                      fit: BoxFit.fill,
+                                    ),
                             ),
                           ),
                           Container(
@@ -87,18 +109,20 @@ class _RestaurantPageState extends State<RestaurantPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                Util.appUser != null
+                                    ? Text(
                                   Util.appUser!.name.toString(),
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
-                                ),
-                                Text(
+                                ) : Container(),
+                                Util.appUser != null
+                                    ? Text(
                                   Util.appUser!.email.toString(),
                                   style: TextStyle(
                                       color: Colors.white60,
                                       fontWeight: FontWeight.bold),
-                                ),
+                                ) : Container(),
                               ],
                             ),
                           ),
@@ -114,22 +138,32 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     Navigator.pushNamed(context, '/restaurant');
                   },
                 ),
-                Util.appUser!.isAdmin==true
+                Util.appUser != null
+                    ? (Util.appUser!.isAdmin==true
                     ? ListTile(
-                        dense: true,
-                        leading: Icon(Icons.logout),
-                        title: Text('Logout'),
-                        onTap: () {
-                          FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacementNamed(context, '/login');
-                        },
-                      )
-                    : Container(),
+                  dense: true,
+                  leading: Icon(Icons.restaurant),
+                  title: Text('Add Restaurant'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/addRestaurant');
+                  },
+                )
+                    : Container()) : Container(),
+                ListTile(
+                  dense: true,
+                  leading: Icon(Icons.shopping_cart),
+                  title: Text('Cart'),
+                  onTap: (){
+                    Navigator.pushNamed(context, '/cart');
+                  },
+                ),
                 ListTile(
                   dense: true,
                   leading: Icon(Icons.person),
                   title: Text('Profile'),
-                  onTap: (){},
+                  onTap: (){
+                    Navigator.pushNamed(context, '/profile');
+                  },
                 ),
                 ListTile(
                   dense: true,
@@ -143,7 +177,14 @@ class _RestaurantPageState extends State<RestaurantPage> {
               ],
             ),
           ),
-          body: ListView(
+          body: snapshot.data.docs.isEmpty
+              ? Center(
+                  child: Text(
+                    'No Restaurants Available',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                )
+              : ListView(
             children: snapshot.data.docs.map<Widget>((DocumentSnapshot document){
               Map<String, dynamic> map = document.data() as Map<String, dynamic>;
 
@@ -155,21 +196,34 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     height: 290,
                     margin: EdgeInsets.only(bottom: 5),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 5,
-                        ),
-                      ]
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 5,
+                          ),
+                        ]
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),
-                      onTap: () {},
+                      onTap: () {
+                        // Navigator.push(context, MaterialPageRoute(
+                        //   builder: (context) => DishPage(
+                        //     restaurantID: document.id,
+                        //     restaurantName: map['name'],
+                        //   ),
+                        // ));
+                        Navigator.push(context, Util.getAnimatedRoute(
+                          DishPage(
+                            restaurantID: document.id,
+                            restaurantName: map['name'],
+                          ),
+                        ));
+                      },
                       child: Column(
                         children: [
                           FadeInImage.assetNetwork(
-                            width: 350,
+                            width: 380,
                             height: 200,
                             fit: BoxFit.fill,
                             placeholder: 'circular_loader.gif',
@@ -208,38 +262,47 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                 ),
                                 Column(
                                   children: [
-                                    Util.appUser!.isAdmin == true ? Container(
+                                    Util.appUser != null
+                                        ? (Util.appUser!.isAdmin == true ? Container(
                                       height: 50,
                                       width: 50,
                                       child: InkWell(
                                         child: Icon(Icons.edit),
                                         onTap: (){
-                                          // Navigator.push(context, MaterialPageRoute(builder: (context) => DishDetails(restaurantID: document.id,)));
+                                          // Navigator.push(context, MaterialPageRoute(builder: (context) => AddDishes(restaurantID: document.id, restaurantName: map['name'],)));
+                                          Navigator.push(context, Util.getAnimatedRoute(AddDishes(restaurantID: document.id, restaurantName: map['name'],)));
+
                                         },
                                       ),
-                                    ) : Container(),
+                                    ) : Container()) : Container(),
                                   ],
                                 ),
                                 Spacer(),
                                 Column(
                                   children: [
-                                    Container(
-                                      height: 28,
-                                      width: 50,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text(map['ratings'].toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                          Icon(Icons.star, color: Colors.white, size: 15,)
-                                        ],
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.green[800],
-                                      ),
+                                    Row(
+                                      children: [
+                                        for(double i = 1; i<=map['ratings']; i++)
+                                          Icon(Icons.star, color: Colors.orangeAccent, size: 15,),
+                                        (10*map['ratings'])%10 != 0 ?
+                                        ShaderMask(
+                                          blendMode: BlendMode.srcATop,
+                                          shaderCallback: (Rect rect) {
+                                            return LinearGradient(
+                                              // stops: [0, (5 - map['ratings'])*100],
+                                              stops: [0, ((10*map['ratings'])%10) / 10],
+                                              colors: [
+                                                Colors.orangeAccent,
+                                                Colors.white,
+                                              ],
+                                            ).createShader(rect);
+                                          },
+                                          child: Icon(Icons.star, size: 15, color: Colors.white,),
+                                        ) : Container(),
+                                        // Spacer(),
+                                      ],
                                     ),
-                                    SizedBox(height: 5,),
+                                    SizedBox(height: 10,),
                                     Text("\u20b9${map['pricePerPerson']} for one", style: TextStyle(color: Colors.grey),),
                                   ],
                                 ),

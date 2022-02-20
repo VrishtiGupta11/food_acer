@@ -18,6 +18,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
 
   String imagePath = "NA";
   final ImagePicker _picker = ImagePicker();
+  String text = 'Choose';
 
   Future<void> uploadFile(String filePath) async {
     File file = File(filePath);
@@ -29,14 +30,18 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
           .ref(widget.folderName!+'/'+widget.imageName.toString()+'.png')
           .getDownloadURL()
           .then((value) => imagePath = value.toString());
+      text = 'Selected';
       print(imagePath);
       print("UPLOAD SUCCESS");
+      ShowSnackBar(message: 'UPLOAD SUCCESS', context: context);
+
       setState(() {});
       imagePath=='NA'? CircularProgressIndicator()
       : Navigator.pop(context, {'imageURL': imagePath, 'imageName': widget.imageName=='' ? 'image' : widget.imageName.toString()+'.png'});
 
     } on FirebaseException catch (e) {
       print("UPLOAD FAILED");
+      ShowSnackBar(message: 'UPLOAD FAILED', context: context);
     }
   }
 
@@ -45,6 +50,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
   Widget build(BuildContext context) {
         return Scaffold(
           appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.grey),
             title: ShaderMask(
               shaderCallback: (bounds) {
                 return LinearGradient(
@@ -70,7 +76,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
                     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                     uploadFile(image!.path);
                   },
-                  child: Text('Choose', style: TextStyle(color: Colors.white),),
+                  child: Text(text, style: TextStyle(color: Colors.white),),
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.deepPurpleAccent,
                   ),

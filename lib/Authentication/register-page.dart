@@ -37,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
         );
         var dataToSave = Util.appUser!.toMap();
 
-        FirebaseFirestore.instance.collection("users").doc(Util.appUser!.uid).set(dataToSave).then((value) => Navigator.pushReplacementNamed(context, "/restaurant"));
+        FirebaseFirestore.instance.collection("users").doc(Util.appUser!.uid).set(dataToSave).then((value) => Navigator.pushReplacementNamed(context, "/splash"));
 
       }else{
         // Registration Failed
@@ -88,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Align(
                   child: Image.asset(
                     'top.png',
-                    width: sized.width,
+                    // width: sized.width,
                   ),
                   alignment: Alignment.topLeft,
                 ),

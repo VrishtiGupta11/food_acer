@@ -26,10 +26,10 @@ class _LoginPageState extends State<LoginPage> {
         // Util.appUser!.isAdmin == true
         //     ? Navigator.pushReplacementNamed(context, '/addRestaurant')
         //     : Navigator.pushReplacementNamed(context, '/restaurant');
-        Navigator.pushReplacementNamed(context, '/restaurant');
+        Navigator.pushReplacementNamed(context, '/splash');
       } else{
-        setState(() {
-          showLoader = false;
+          setState(() {
+            showLoader = false;
         });
       }
 
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           children: [
             Align(
-              child: Image.asset('top.png', width: sized.width,),
+              child: Image.asset('top.png'),
               alignment: Alignment.topLeft,
             ),
             Padding(

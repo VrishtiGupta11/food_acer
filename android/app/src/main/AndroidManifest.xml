@@ -3,6 +3,10 @@
    <application
         android:label="food_acer"
         android:icon="@mipmap/food_acer">
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyB8cw1REvgm3V7RorCCBash3dRohpNC9OU"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
